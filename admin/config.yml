@@ -1,10 +1,11 @@
 backend:
   name: github
-  repo: Brandirectivecoder/mweb_v2 
+  repo: Brandirectivecoder/maulikgajjar.in 
   branch: main 
 
 media_folder: "assets"
 public_folder: "assets"
+site_url: "https://maulikgajjar.in/"
 
 collections:
   - name: "site"
