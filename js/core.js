@@ -38,7 +38,7 @@
 
   /* ---------- LENIS ---------- */
   let lenis = null;
-  if (window.Lenis && !reduce) {
+  if (window.Lenis && !reduce && window.innerWidth > 900) {
     lenis = new Lenis({ lerp: 0.1, wheelMultiplier: 1, smoothWheel: true, smoothTouch: false });
     window.__lenis = lenis;
   }
