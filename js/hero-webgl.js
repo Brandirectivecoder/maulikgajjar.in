@@ -54,6 +54,7 @@
 
   function init() {
     if (!window.THREE) return;
+    
     const canvas = document.querySelector(".hero-canvas");
     if (!canvas) return;
     const hero = canvas.parentElement;
@@ -75,10 +76,18 @@
       uColorA: { value: new THREE.Color("#f0b15a") }, uColorB: { value: new THREE.Color("#c2562e") },
     };
     const mat = new THREE.ShaderMaterial({ uniforms, vertexShader, fragmentShader });
-    const mesh = new THREE.Mesh(new THREE.IcosahedronGeometry(1.5, 48), mat); group.add(mesh);
-    const wire = new THREE.Mesh(new THREE.IcosahedronGeometry(1.66, 5), new THREE.MeshBasicMaterial({ color: 0xf0b15a, wireframe: true, transparent: true, opacity: 0.08 })); group.add(wire);
+    
+    // --- PERFORMANCE OPTIMIZER ---
+    // Detect mobile screens to slightly lower the polygon/particle count so the phone stays smooth
+    const isMobileGPU = window.innerWidth <= 900;
+    const geoDetail = isMobileGPU ? 16 : 48; 
+    const wireDetail = isMobileGPU ? 3 : 5;
+    const particleCount = isMobileGPU ? 250 : 700;
 
-    const N = 700, pos = new Float32Array(N * 3);
+    const mesh = new THREE.Mesh(new THREE.IcosahedronGeometry(1.5, geoDetail), mat); group.add(mesh);
+    const wire = new THREE.Mesh(new THREE.IcosahedronGeometry(1.66, wireDetail), new THREE.MeshBasicMaterial({ color: 0xf0b15a, wireframe: true, transparent: true, opacity: 0.08 })); group.add(wire);
+
+    const N = particleCount, pos = new Float32Array(N * 3);
     for (let i = 0; i < N; i++) {
       const r = 2.0 + Math.random() * 1.7, th = Math.random() * Math.PI * 2, ph = Math.acos(2 * Math.random() - 1);
       pos[i*3] = r*Math.sin(ph)*Math.cos(th); pos[i*3+1] = r*Math.sin(ph)*Math.sin(th); pos[i*3+2] = r*Math.cos(ph);
