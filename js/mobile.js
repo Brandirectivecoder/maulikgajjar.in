@@ -90,17 +90,16 @@
   }
 
   /* ── Init ── */
-/* ── Init ── */
-  function init() {
+function init() {
     if (isMobile()) {
       buildMobileNav();
       
       const htmlEl = document.documentElement;
-
-      /* Function to rip off Lenis classes */
-      const stripLenis = () => {
-        htmlEl.classList.remove('lenis', 'lenis-smooth', 'lenis-scrolling', 'lenis-stopped');
-      };
+      htmlEl.classList.remove('lenis', 'lenis-smooth', 'lenis-scrolling', 'lenis-stopped');
+      
+      if (window.__lenis) window.__lenis.destroy();
+    }
+  }
 
       /* 1. Do an initial strip */
       stripLenis();
