@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Message Delivered — Maulik Gajjar</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;700&family=Permanent+Marker&family=Architects+Daughter&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#EDECF2;
+  --pencil:#2b2722;
+  --pencil-soft:#4a443c;
+  --pencil-faint:#7a7261;
+  --accent:#b8421f;
+  --accent2:#d4651f;
+  --ff-marker:'Permanent Marker', cursive;
+  --ff-hand:'Architects Daughter', cursive;
+  --ff-mono:'JetBrains Mono', monospace;
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+html{font-size:16px}
+body{
+  background:var(--paper);
+  color:var(--pencil);
+  font-family:var(--ff-hand);
+  min-height:100vh;
+  overflow:hidden;
+  position:relative;
+}
+
+/* paper grain + soft vignette */
+.paper-texture{position:fixed;inset:0;z-index:0;pointer-events:none}
+.paper-texture::before{
+  content:'';position:absolute;inset:0;
+  background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E");
+  opacity:.07;mix-blend-mode:multiply;
+}
+.paper-texture::after{
+  content:'';position:absolute;inset:0;
+  background:radial-gradient(ellipse at 50% 45%, transparent 48%, rgba(43,39,34,0.15) 100%);
+}
+
+.skip-btn{
+  position:fixed;bottom:1.4rem;right:1.4rem;z-index:60;
+  font-family:var(--ff-hand);font-size:.85rem;
+  color:var(--pencil-soft);background:rgba(236,228,210,.8);border:1.5px solid var(--pencil-faint);
+  padding:.5rem 1.1rem;cursor:pointer;border-radius:6px;
+  opacity:.85;transition:opacity .3s,border-color .3s;transform:rotate(-1deg);
+}
+.skip-btn:hover{opacity:1;border-color:var(--accent)}
+
+.tagstrip{
+  position:fixed;top:0;left:0;width:100%;z-index:55;
+  display:flex;align-items:center;gap:.6rem;padding:1.6rem 2rem 0;
+  font-family:var(--ff-mono);font-size:.62rem;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--pencil-faint);flex-wrap:wrap;opacity:0;
+}
+.tagstrip.show{opacity:1;transition:opacity .8s ease}
+.tagstrip .sep{color:var(--accent)}
+
+.stage{
+  position:fixed;inset:0;
+  display:flex;align-items:center;justify-content:center;
+  z-index:10;
+}
+.stage .bg-image,
+.stage svg{
+  width:min(92vw, 1024px);
+  height:auto;
+  max-height:88vh;
+  position:absolute;
+  object-fit:contain;
+}
+
+/* falling envelope group animated via JS transform */
+#envelope{will-change:transform}
+
+/* reveal text - positioned in the blank top area */
+.reveal-wrap{
+  position:fixed;inset:0;z-index:40;
+  display:flex;align-items:flex-start;
+  justify-content:center;pointer-events:none;
+  padding-top: 14vh;
+}
+.reveal{
+  text-align:center;padding:0 1.5rem;max-width:720px;
+  opacity:0;transform:translateY(-16px) rotate(-0.4deg);pointer-events:none;
+}
+.reveal.show{animation:revealDown .9s cubic-bezier(.16,1,.3,1) forwards;pointer-events:auto}
+@keyframes revealDown{to{opacity:1;transform:translateY(0) rotate(0)}}
+.headline{
+  font-family:var(--ff-marker);font-weight:400;
+  font-size:clamp(1.6rem,4vw,2.9rem);line-height:1.25;
+  margin:0 auto .7rem;color:var(--pencil);transform:rotate(-0.8deg);
+}
+.headline .accent-word{color:var(--accent);display:inline-block;position:relative}
+.headline .accent-word::after{
+  content:'';position:absolute;left:-2%;right:-2%;bottom:-5px;height:6px;
+  background:var(--accent2);opacity:.4;border-radius:3px;transform:rotate(-1deg);z-index:-1;
+}
+.subline{font-family:var(--ff-hand);font-size:1.05rem;line-height:1.6;color:var(--pencil-soft);max-width:440px;margin:0 auto 1.6rem}
+.subline strong{color:var(--pencil);font-weight:700}
+.actions{display:flex;align-items:center;justify-content:center;gap:1.8rem;flex-wrap:wrap}
+.lnk{font-family:var(--ff-hand);font-size:1.02rem;color:var(--pencil);text-decoration:none;padding-bottom:3px;border-bottom:2px solid var(--pencil-faint);transition:border-color .3s,color .3s;transform:rotate(-.5deg);display:inline-block}
+.lnk:hover{border-color:var(--accent);color:var(--accent)}
+
+@media (prefers-reduced-motion: reduce){
+  #envelope{transform:none !important}
+  .reveal{animation:none !important;opacity:1;transform:none;pointer-events:auto}
+}
+@media(max-width:760px){
+  .tagstrip{padding:1.2rem 1.2rem 0;font-size:.54rem}
+  .stage .bg-image, .stage svg{width:98vw}
+}
+</style>
+</head>
+<body>
+
+<div class="paper-texture"></div>
+
+<button class="skip-btn" id="skipBtn">skip ahead →</button>
+<div class="tagstrip" id="tagstrip">
+  <span>→ BRIEF RECEIVED</span><span class="sep">→</span><span>TRIPEARLSOFT PVT. LTD.</span>
+</div>
+
+<div class="stage">
+  <img src="assets/thank-you.png" class="bg-image" alt="Desk scene with plant, coffee, phone, and notebook">
+  
+  <svg id="scene" viewBox="0 0 1024 725" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <filter id="pencil" x="-20%" y="-20%" width="140%" height="140%">
+        <feTurbulence type="fractalNoise" baseFrequency="0.018 0.022" numOctaves="3" seed="7" result="noise"/>
+        <feDisplacementMap in="SourceGraphic" in2="noise" scale="4.2" xChannelSelector="R" yChannelSelector="G"/>
+      </filter>
+      <filter id="grainFill">
+        <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" result="n"/>
+        <feColorMatrix in="n" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 0.5 0"/>
+        <feComposite operator="in" in2="SourceGraphic"/>
+        <feBlend in="SourceGraphic" mode="multiply"/>
+      </filter>
+      <pattern id="hatch" patternUnits="userSpaceOnUse" width="7" height="7" patternTransform="rotate(35)">
+        <line x1="0" y1="0" x2="0" y2="7" stroke="#2b2722" stroke-width="0.8" opacity="0.55"/>
+      </pattern>
+      <pattern id="hatchCross" patternUnits="userSpaceOnUse" width="6" height="6" patternTransform="rotate(35)">
+        <line x1="0" y1="0" x2="0" y2="6" stroke="#2b2722" stroke-width="0.7" opacity="0.45"/>
+        <line x1="0" y1="0" x2="6" y2="0" stroke="#2b2722" stroke-width="0.7" opacity="0.35"/>
+      </pattern>
+    </defs>
+
+    <ellipse id="shadow" cx="512" cy="580" rx="0" ry="0"
+      fill="url(#hatchCross)" opacity="0"/>
+    <ellipse id="shadowSoft" cx="512" cy="580" rx="0" ry="0"
+      fill="#2b2722" opacity="0"/>
+
+    <g id="dust"></g>
+
+    <g id="envelope" filter="url(#pencil)" transform="translate(512 -160)">
+      <g id="envInner">
+        <rect x="-110" y="-72" width="220" height="144" rx="3"
+          fill="#ECE4D2" stroke="#2b2722" stroke-width="2.6"/>
+        <path d="M-110 -69 L108 -71" stroke="#4a443c" stroke-width="1" opacity="0.45"/>
+        <path d="M-108 72 L110 70" stroke="#4a443c" stroke-width="1" opacity="0.4"/>
+        <path d="M-108 -70 L0 18 L108 -70" stroke="#2b2722" stroke-width="2.4" fill="none"/>
+        <path d="M-104 -66 L0 14 L104 -66" stroke="#4a443c" stroke-width="0.9" fill="none" opacity="0.4"/>
+        <path d="M0 18 L-110 72" stroke="#2b2722" stroke-width="1.6" opacity="0.7"/>
+        <path d="M0 18 L110 72" stroke="#2b2722" stroke-width="1.6" opacity="0.7"/>
+        <path d="M-108 -70 L0 18 L-110 72 L-110 -70 Z" fill="url(#hatch)" opacity="0.30"/>
+        <path d="M110 72 L0 18 L110 -40 Z" fill="url(#hatch)" opacity="0.16"/>
+
+        <g id="seal">
+          <circle cx="0" cy="20" r="22" fill="#b8421f"/>
+          <circle cx="0" cy="20" r="22" fill="url(#grainFill)"/>
+          <circle cx="0" cy="20" r="22" fill="none" stroke="#7a2a12" stroke-width="2"/>
+          <path d="M-22 20 C -24 12, -20 6, -14 4 M22 20 C 24 28, 20 34, 14 36"
+            stroke="#7a2a12" stroke-width="1.4" fill="none" opacity="0.6"/>
+          <path d="M-9 30 L-9 10 L0 22 L9 10 L9 30" stroke="#ECE4D2" stroke-width="2.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+        </g>
+      </g>
+    </g>
+  </svg>
+</div>
+
+<div class="reveal-wrap">
+  <div class="reveal" id="revealText">
+    <h1 class="headline">Your note just landed on his desk — <span class="accent-word">sealed &amp; safe.</span></h1>
+    <p class="subline">Every good project starts with someone willing to listen first. <strong>Maulik will read it personally</strong> and get back to you within 24 hours.</p>
+    <div class="actions">
+      <a href="index.html" class="lnk">← back to site</a>
+      <a href="https://linkedin.com/in/maulikgajjar" target="_blank" class="lnk">view linkedin ↗</a>
+    </div>
+  </div>
+</div>
+
+<script>
+const env = document.getElementById('envelope');
+const shadow = document.getElementById('shadow');
+const shadowSoft = document.getElementById('shadowSoft');
+const dust = document.getElementById('dust');
+const revealText = document.getElementById('revealText');
+const tagstrip = document.getElementById('tagstrip');
+const skipBtn = document.getElementById('skipBtn');
+
+/* Adjusted landing target on the desk to match the image */
+const LAND_X = 512, LAND_Y = 580; 
+const START_Y = -160;          // above the top of the viewport
+const FALL_MS = 4200;          // slow, paper-like descent
+
+let rafId=null, startT=null, done=false;
+
+function easeOutBounceSettle(t){
+  if(t<0.86){
+    const tt = t/0.86;
+    return 1 - Math.pow(1-tt, 3);
+  } else {
+    const tt=(t-0.86)/0.14;
+    return 1 + Math.sin(tt*Math.PI)*0.012*(1-tt);
+  }
+}
+
+function makeDust(){
+  for(let i=0;i<10;i++){
+    const c=document.createElementNS('http://www.w3.org/2000/svg','circle');
+    const ang=Math.PI + (Math.random()-0.5)*Math.PI*1.1;
+    const dist=30+Math.random()*70;
+    c.setAttribute('cx', LAND_X);
+    c.setAttribute('cy', LAND_Y+60);
+    c.setAttribute('r', 1+Math.random()*2.4);
+    c.setAttribute('fill', '#7a7261');
+    c.setAttribute('opacity','0');
+    dust.appendChild(c);
+    const tx = LAND_X + Math.cos(ang)*dist;
+    const ty = LAND_Y+60 + Math.sin(ang)*dist*0.5 - 10;
+    requestAnimationFrame(()=>{
+      c.style.transition='transform 0.7s ease-out, opacity 0.7s ease-out';
+      c.style.transform=`translate(${tx-LAND_X}px, ${ty-(LAND_Y+60)}px)`;
+      c.setAttribute('opacity','0.5');
+      setTimeout(()=>{ c.setAttribute('opacity','0'); }, 350);
+    });
+  }
+}
+
+function frame(ts){
+  if(!startT) startT=ts;
+  const e=ts-startT;
+  let t=Math.min(e/FALL_MS,1);
+  const prog=easeOutBounceSettle(t);
+
+  const y = START_Y + (LAND_Y - START_Y)*prog;
+  const swayAmt = (1-t)*70;
+  const x = LAND_X + Math.sin(e/620)*swayAmt;
+
+  const rot = Math.sin(e/620 + 0.4)*16*(1-t) ;
+  const flat = 1 - 0.12*Math.min(1, t/0.9);
+
+  env.setAttribute('transform', `translate(${x} ${y}) rotate(${rot}) scale(1 ${flat})`);
+
+  const sh = Math.max(0, (y - 100) / (LAND_Y - 100));
+  const shClamped = Math.min(1, sh);
+  shadow.setAttribute('cx', x);
+  shadow.setAttribute('rx', 120*shClamped);
+  shadow.setAttribute('ry', 26*shClamped);
+  shadow.setAttribute('opacity', 0.32*shClamped);
+  shadowSoft.setAttribute('cx', x);
+  shadowSoft.setAttribute('rx', 110*shClamped);
+  shadowSoft.setAttribute('ry', 22*shClamped);
+  shadowSoft.setAttribute('opacity', 0.10*shClamped);
+
+  if(t<1){
+    rafId=requestAnimationFrame(frame);
+  } else {
+    land();
+  }
+}
+
+function land(){
+  shadow.setAttribute('cx', LAND_X);
+  shadow.setAttribute('rx', 122);
+  shadow.setAttribute('ry', 26);
+  shadow.setAttribute('opacity', 0.32);
+  makeDust();
+  setTimeout(()=>{ revealText.classList.add('show'); tagstrip.classList.add('show'); }, 700);
+  done=true;
+}
+
+function start(){ if(done) return; startT=null; rafId=requestAnimationFrame(frame); }
+
+function skip(){
+  if(rafId) cancelAnimationFrame(rafId);
+  env.setAttribute('transform', `translate(${LAND_X} ${LAND_Y}) rotate(0) scale(1 0.88)`);
+  shadow.setAttribute('cx', LAND_X); shadow.setAttribute('rx', 122); shadow.setAttribute('ry', 26); shadow.setAttribute('opacity', 0.32);
+  revealText.classList.add('show'); tagstrip.classList.add('show');
+  done=true;
+}
+skipBtn.addEventListener('click', skip);
+
+if(window.matchMedia('(prefers-reduced-motion: reduce)').matches){ skip(); }
+else { window.addEventListener('load', ()=>setTimeout(start, 450)); }
+</script>
+</body>
+</html>
